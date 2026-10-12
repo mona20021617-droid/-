@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>部屋割りメーカー(ログイン不要版)</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f5f1;--fg:#1f2430;--card:#fff;--bd:#d9d6cc;--vis:#fbdde0;--host:#ffe08a;--ex:#8c1420;--ac:#cf2030;--wn:#fde4e1}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181f;--fg:#e8e8ea;--card:#1f232c;--bd:#3a3f4b;--vis:#5a2229;--host:#6b5510;--ex:#ff8a80;--ac:#e5394a;--wn:#4a2420}}
+:root[data-theme="dark"]{--bg:#15181f;--fg:#e8e8ea;--card:#1f232c;--bd:#3a3f4b;--vis:#5a2229;--host:#6b5510;--ex:#ff8a80;--ac:#e5394a;--wn:#4a2420}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 "Hiragino Sans","Noto Sans JP",sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:22px;margin:0 0 12px;background:var(--ac);color:#fff;padding:14px 18px;border-radius:8px;letter-spacing:.04em}h2{font-size:17px;margin:30px 0 6px;color:var(--ac);border-bottom:2px solid var(--ac);padding-bottom:3px}.s{margin:0 0 8px;opacity:.75;font-size:13px}
+textarea,input[type=text],input[type=number],input[type=date]{padding:6px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--fg);font:inherit;box-sizing:border-box}
+textarea{width:100%;height:64px}input[type=number]{width:64px}
+button{padding:7px 14px;border:0;border-radius:6px;background:var(--ac);color:#fff;font:inherit;font-weight:700;cursor:pointer;margin:6px 6px 0 0}
+button.g{background:none;color:var(--ac);border:1px solid var(--ac)}
+.l{max-height:260px;overflow:auto;border:1px solid var(--bd);border-radius:6px;background:var(--card);margin-top:8px}
+.m{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;padding:4px 8px;border-bottom:1px solid var(--bd);font-size:14px}
+.m b{min-width:9em}.m input[type=text]{flex:1;min-width:140px}
+#msg{margin:12px 0 4px;font-weight:600}#warn{background:var(--wn);border-radius:6px;padding:0 10px;margin-bottom:8px}#warn p{margin:6px 0}
+#rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.r{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px}.r.w{border-color:var(--ex);border-width:2px}
+.r h3{margin:0 0 6px;font-size:15px}
+.c{display:block;width:100%;text-align:left;margin:3px 0;padding:5px 8px;border:1px solid var(--bd);border-radius:5px;background:none;color:var(--fg);font-weight:400;cursor:pointer}
+.c.v{background:var(--vis);cursor:default}.c.h{background:var(--host)}.c.x{color:var(--ex);font-weight:700}.c.sel{outline:3px solid var(--ac)}
+#o{width:100%;height:80px;margin-top:10px}
+.m button.g{padding:1px 7px;font-size:12px;margin:0;border-radius:4px}
+.m button.g[data-mv]{padding:1px 6px}
+.r h3{color:var(--ac)}
+.sum{background:var(--wn);border-left:4px solid var(--ac);border-radius:4px;padding:8px 12px;margin:6px 0;font-weight:700;line-height:1.7}
+.r{border-top:4px solid var(--ac);padding:12px}.r.vr{background:var(--vis)}
+.r h3{display:flex;align-items:center;margin:0 0 8px;font-size:15px;color:var(--fg)}
+.rid{display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--ac);color:#fff;align-items:center;justify-content:center;margin-right:8px;font-weight:700}
+.cn{margin-left:auto;font-size:12px;font-weight:400;opacity:.7}
+#rooms{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.c{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:7px 10px;margin:5px 0;background:var(--card)}
+.c.h{background:var(--card)}.c.x{color:var(--fg);font-weight:400}
+.nm{font-weight:700}.ct{font-size:12px;opacity:.7}
+.bd i{font-style:normal;font-size:11px;padding:1px 7px;border-radius:9px;background:var(--host);color:var(--fg);margin-right:4px}.bd i.o{background:#e3e1d8;color:#1f2430}.bd i.t{background:var(--ac);color:#fff}
+.c.v{border:2px solid var(--ac);cursor:pointer}.c.e{border-style:dashed;opacity:.65;justify-content:center}
+.c.sel{outline:3px solid var(--ac)}
+main{max-width:1180px}
+.r{padding:8px}.c{padding:4px 8px;margin:3px 0}.nm{font-size:14px}.ct{font-size:10.5px}
+@media(min-width:900px){#rooms{grid-template-columns:repeat(5,1fr);gap:8px}}
+@page{size:A4 landscape;margin:7mm}
+#ptitle{display:none}
+@media print{html:root:root{--bg:#fff;--fg:#1f2430;--card:#fff;--bd:#d9d6cc;--vis:#fbdde0;--host:#ffe08a;--ac:#cf2030}
+html,body{background:#fff;margin:0;padding:0}main{padding:0;max-width:none;margin:0}
+main>*{display:none!important}
+main>#ptitle{display:block!important;font-size:14pt;font-weight:700;color:#fff;background:#cf2030;padding:2mm 4mm;margin:0 0 2mm}
+main>#rooms{display:grid!important;grid-template-columns:repeat(var(--pc,5),1fr);gap:2mm}
+.r{padding:1.5mm 2mm;border-width:0;border-top:1.2mm solid #cf2030;break-inside:avoid}.r h3{font-size:9pt;margin:0 0 1mm}
+.rid{width:5mm;height:5mm;font-size:8pt;margin-right:1.5mm}.c{padding:.6mm 1.5mm;margin:.6mm 0;border-width:.3mm}
+.nm{font-size:7pt}.ct{font-size:5pt}.bd i{font-size:5pt;padding:0 1mm}.c.e{display:none}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body><main>
+<h1>部屋割りメーカー</h1>
+<p class="s">メンバーとビジターを登録し、「割り振る」を押します。人を2人タップすると入れ替わり、ルール違反は赤で警告されます。</p>
+
+<h2>1. メンバー</h2>
+<div class="sum" id="mc"></div>
+<details open style="margin:8px 0"><summary><b>スプレッドシートから名簿を貼り付けて登録</b></summary>
+<p class="s">名簿のシートで、見出し行を含めて範囲を選んでコピーし、下に貼り付けます。見出しに「氏名(または名前)」「カテゴリー」「分野(または業種)」「役職」「ビジホス」「三役」があれば、自動で読み取ります。「班」の列があれば、班も読み取ります。見出しがない場合は、左から 名前、カテゴリー、業種、ビジホス、三役、班 の順として読みます。ビジホスと三役の列は、空欄でなければ該当とみなします。登録のたびに、今の名簿と置き換わります(出席・欠席・代理の設定は、同じ名前の人なら引き継ぎます)。</p>
+<textarea id="pm" style="height:90px" placeholder="ここに名簿を貼り付け"></textarea>
+<button id="im">貼り付けた名簿を登録(今の名簿と置き換え)</button></details>
+<p class="s">名前とカテゴリーを入れ、「追加位置」で入れる場所(〇〇さんの後ろ)を選んで追加します。並び順は各行の↑↓でも変えられます。ビジホスと三役の人は、追加時か一覧でチェックしてください。欠席のメンバーに代理の方がいる場合は「代理」を選んで名前を入れると、その方が部屋割りに入ります(代理名が空なら欠席扱い)。登録した内容は自動で保存され、次回もそのまま使えます(<span id="sv">確認中</span>)。</p>
+<div><input type="text" id="an" placeholder="名前"> <input type="text" id="ac" placeholder="カテゴリー"> <input type="text" id="af" placeholder="業種(分野)"> <input type="text" id="ag" placeholder="班" style="width:60px"> <label>追加位置 <select id="ap"></select></label><label><input type="checkbox" id="ah"> ビジホス</label> <label><input type="checkbox" id="ax"> 三役</label><button id="ad" style="font-size:15px;padding:9px 20px">＋ メンバーを追加</button><button class="g" id="ra">全員を出席に戻す</button></div>
+<div class="l" id="ml"></div>
+
+<h2>2. 今日のビジター・ゲスト</h2>
+<div class="sum" id="vsum"></div>
+<p class="s">ビジターまたはゲストを、種別を選んで1人ずつ追加します(どちらも同じルールで部屋に入れます)。つながりたい人を選ばなかった場合は、ランダムに入ります。</p>
+
+<div class="l" style="padding:8px"><b>ビジターを1人ずつ追加</b>
+<div class="m"><b>種別</b><label><input type="radio" name="vk" value="ビジター" checked> ビジター</label><label><input type="radio" name="vk" value="ゲスト"> ゲスト</label></div>
+<div class="m"><input type="text" id="vn" placeholder="名前"><input type="text" id="vk" placeholder="フリガナ"><input type="text" id="vc" placeholder="会社名"></div>
+<div class="m"><input type="text" id="vf" placeholder="カテゴリー・専門分野"><input type="text" id="vs" placeholder="スポンサー名"><input type="text" id="vw" placeholder="つながりたい業種"></div>
+<div class="m"><div style="flex:1;min-width:200px"><div class="s">スポンサー(選ぶと上の欄に入ります)</div><div class="l" id="spl" style="max-height:150px"></div></div>
+<div style="flex:1;min-width:200px"><div class="s">つながりたい人(メンバーから複数選べます)</div><div class="l" id="pkl" style="max-height:150px"></div></div></div>
+</div>
+<button id="va" style="font-size:16px;padding:12px 28px;margin-top:12px">＋ ビジター/ゲストを追加</button>
+<div class="l" id="vl"></div>
+
+<h2>3. 部屋割り</h2>
+<p><b>割り方</b> <label><input type="radio" name="md" value="r" checked> ランダム(下の部屋数で割る)</label> <label><input type="radio" name="md" value="g"> 班で割る(メンバーの「班」ごとに1部屋)</label></p>
+<p>4人部屋 <input type="number" id="n4" min="0" value="15">室 5人部屋 <input type="number" id="n5" min="0" value="0">室 <button class="g" id="au">人数から自動入力</button></p><div class="sum" id="cnt"></div><p><button id="go">割り振る</button><button class="g" id="cp">シート貼り付け用にコピー</button><button id="pdf">PDFで保存(A4横・1枚)</button><button class="g" id="prt">印刷する</button></p>
+<p><label><input type="checkbox" id="av" checked> 過去の同室を避ける</label> <button class="g" id="rec">この部屋割りで確定して記録</button><button class="g" id="undo">直前の記録を取り消す</button> <span class="s" id="hs"></span></p>
+
+<div id="msg"></div>
+<p class="s">入れ替えたい人をタップして選び、次に入れ替え先の人(または空席)をタップします。パソコンではドラッグでも動かせます。ビジターはビジター同士で入れ替えできます。</p><div id="warn"></div><div id="ptitle"></div><div id="rooms"></div><textarea id="o" readonly aria-hidden="true" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px"></textarea>
+<h2>4. ZOOM名前変更用(ビジター・ゲスト)</h2>
+<p class="s">各ビジターの部屋の記号と、名前/専門分野です。コピーしてZOOMの名前変更の案内に使えます。</p>
+<textarea id="zn" readonly style="height:110px"></textarea><button id="cz">コピー</button>
+
+<script>
+const $=id=>document.getElementById(id);
+let S={members:[],visitors:[]},R=[],sel=null,db=null,sample=null;
+const uid=()=>Math.random().toString(36).slice(2,8);
+const nm=s=>(s||'').replace(/[\s　]/g,'').replace(/(さん|くん|ちゃん|様)$/,'').replace(/﨑/g,'崎');
+const isSp=(m,v)=>!!v.sp&&(nm(m.name)===nm(v.sp)||nm(v.sp).length>1&&nm(m.name).startsWith(nm(v.sp)));
+const picked=(m,v)=>[...(v.picks||[]),...(v.pick?[v.pick]:[])].some(n=>nm(m.name)===nm(n));
+const sc=(m,v)=>([...(v.picks||[]),...(v.pick?[v.pick]:[])].some(n=>nm(m.name)===nm(n))?5:0)+(v.wants||'').split(/[\s、,・\/]+/).filter(t=>t.length>1&&(m.cat+m.field).includes(t)).length;
+const save=()=>{try{localStorage.setItem('heyawari_state',JSON.stringify(S))}catch(e){}};
+const msg=t=>$('msg').textContent=t;
+const tsv=t=>t.split('\n').map(l=>l.split('\t').map(x=>x.trim())).filter(a=>a.some(x=>x));
+function init(){let ok=true;try{localStorage.setItem('heyawari_t','1');const t=localStorage.getItem('heyawari_state');if(t){const o=JSON.parse(t);if(o&&o.members)S=o}}catch(e){ok=false}
+ $('sv').textContent=ok?'このブラウザに保存されます':'この環境では保存できません';drawM();drawV()}
+function drawPick(){const row=(g,n)=>`<label class="m"><input type="radio" name="${g}" value="${n.replace(/"/g,'&quot;')}">${n}</label>`,
+ none='<label class="m"><input type="radio" name="G" value="" checked>指定なし</label>';
+ $('spl').innerHTML=none.replace('G','sp')+S.members.map(m=>row('sp',m.name)).join('');
+ $('pkl').innerHTML='<label class="m"><input type="checkbox" id="pk0" checked>特になし</label>'+S.members.map(m=>row('pk',m.name).replace('type="radio"','type="checkbox"')).join('');
+ const cur=$('ap').value;$('ap').innerHTML='<option value="">末尾に追加</option>'+S.members.map((m,i)=>`<option value="${i}">${m.name}の後ろ</option>`).join('');$('ap').value=cur}
+$('spl').onchange=e=>{$('vs').value=e.target.value};
+$('pkl').onchange=e=>{const t=e.target,all=[...document.querySelectorAll('input[name=pk]')];
+ if(t.id==='pk0'){if(t.checked)all.forEach(x=>x.checked=false);else if(!all.some(x=>x.checked))t.checked=true}
+ else{$('pk0').checked=!all.some(x=>x.checked)}};
+const mode=()=>(document.querySelector('input[name=md]:checked')||{}).value||'r';
+const gl=g=>/班$/.test(g)?g:g+'班';
+const K=id=>Math.max(0,+$(id).value||0),caps=()=>[...Array(K('n4')).fill(4),...Array(K('n5')).fill(5)];
+const people=()=>S.members.filter(m=>m.st=='p'||(m.st=='s'&&(m.pn||'').trim())).length+S.visitors.length;
+const hsu=()=>{$('hs').textContent='記録済み '+(S.log||[]).length+'回分(直近8回の同室を避けます)'};
+function cnt(){hsu();const A=S.members,V=S.visitors.length,p=A.filter(m=>m.st=='p').length,x=A.filter(m=>m.st=='s'&&(m.pn||'').trim()).length,ab=A.length-p-x,M=p+x,P=M+V,seat=caps().reduce((a,b)=>a+b,0);
+ $('mc').textContent=`登録${A.length}人 ／ 参加メンバー${M}人(出席${p}人 + 代理${x}人) ／ 欠席${ab}人`;
+ $('vsum').textContent=`ビジター${V-S.visitors.filter(v=>v.kind==='ゲスト').length}人 ／ ゲスト${S.visitors.filter(v=>v.kind==='ゲスト').length}人(合計${V}人)`;
+ const r=P%4;let n5=0,n4=Math.ceil(P/4);if(r&&P-5*r>=0){n5=r;n4=(P-5*r)/4}
+ $('cnt').innerHTML=`参加メンバー${M}人 + ビジター・ゲスト${V}人 = 合計${P}人<br>おすすめ: 4人部屋${n4}室`+(n5?` + 5人部屋${n5}室`:'')+`<br>今の設定: 席${seat}`+(seat<P?` → ${P-seat}席足りません`:seat>P?`(空席${seat-P})`:'(ちょうど)');
+ if(mode()==='g'){const att=S.members.filter(m=>m.st=='p'||(m.st=='s'&&(m.pn||'').trim())),cn={};att.forEach(m=>{const g=(m.g||'').trim()||'未設定';cn[g]=(cn[g]||0)+1});
+  $('cnt').innerHTML=`参加メンバー${M}人 + ビジター・ゲスト${V}人 = 合計${P}人<br>班で割ります(${Object.keys(cn).length}班): `+Object.keys(cn).sort((a,b)=>a.localeCompare(b,'ja',{numeric:true})).map(g=>gl(g)+cn[g]+'人').join(' / ')+(V>Object.keys(cn).length?'<br>ビジター・ゲストが班の数より多いため、入りきりません':'')}}
+document.addEventListener('input',cnt);document.addEventListener('change',cnt);
+$('au').onclick=()=>{const T=people(),r=T%4;let n5=0,n4=Math.ceil(T/4);if(r&&T-5*r>=0){n5=r;n4=(T-5*r)/4}$('n4').value=n4;$('n5').value=n5;cnt()};
+function drawM(){drawPick();S.members.forEach(m=>{if(!m.st)m.st=m.p===false?'a':'p'});cnt();$('ml').innerHTML=S.members.map((m,i)=>`<div class="m"><span>${[['p','出席'],['a','欠席'],['s','代理']].map(([k,t])=>`<label><input type="radio" name="st${i}" data-i="${i}" data-st="${k}" ${m.st==k?'checked':''}>${t}</label>`).join(' ')}</span><b${m.st=='a'?' style="opacity:.45"':''}>${m.name}</b><span>${m.field?m.field+' / ':''}${m.cat}</span><input type="text" style="width:56px;flex:none;min-width:0" data-g="${i}" value="${(m.g||'').replace(/"/g,'&quot;')}" placeholder="班">${m.st=='s'?`<input type="text" data-pn="${i}" value="${(m.pn||'').replace(/"/g,'&quot;')}" placeholder="代理の方の名前">`:''}
+ <label><input type="checkbox" data-i="${i}" data-f="h" ${m.h?'checked':''}> ビジホス</label><label><input type="checkbox" data-i="${i}" data-f="x" ${m.x?'checked':''}> 三役</label><button class="g" data-mv="${i}:-1">↑</button><button class="g" data-mv="${i}:1">↓</button><button class="g" data-del="${i}"${delArm==i?' style="color:var(--ex);border-color:var(--ex)"':''}>${delArm==i?'もう一度押すと削除':'削除'}</button></div>`).join('')||'<div class="m">まだメンバーがいません</div>'}
+function drawV(){cnt();$('vl').innerHTML=S.visitors.map((v,i)=>`<div class="m"><span class="bd"><i>${v.kind||'ビジター'}</i></span><b>${v.name}様<small>${v.kana?'('+v.kana+')':''}</small></b><span>${v.comp||''}</span><span>${v.field||''}</span><span>スポンサー: ${v.sp||'未記入'}</span>${[...(v.picks||[]),...(v.pick?[v.pick]:[])].length?`<span>つながりたい人: ${[...(v.picks||[]),...(v.pick?[v.pick]:[])].join('、')}</span>`:''}
+ <input type="text" data-vi="${i}" value="${(v.wants||'').replace(/"/g,'&quot;')}" placeholder="つながりたい人${v.ai?'(AI推定)':''}"><button class="g" data-vd="${i}">削除</button></div>`).join('')||'<div class="m">まだビジターがいません</div>'}
+$('ml').onchange=e=>{const t=e.target,m=S.members[t.dataset.i];if(t.dataset.st){m.st=t.dataset.st;drawM()}else m[t.dataset.f]=t.checked;save()};
+$('ml').oninput=e=>{const i=e.target.dataset.pn,gi=e.target.dataset.g;if(i!=null){S.members[i].pn=e.target.value;save()}if(gi!=null){S.members[gi].g=e.target.value.trim();save();cnt()}};
+let delArm=null;
+$('ml').onclick=e=>{const mv=e.target.dataset.mv;
+ if(mv!=null){const[a,d]=mv.split(':').map(Number),j=a+d;if(j>=0&&j<S.members.length){[S.members[a],S.members[j]]=[S.members[j],S.members[a]];delArm=null;save();drawM()}return}
+ const i=e.target.dataset.del;if(i==null)return;
+ if(delArm===i){S.members.splice(i,1);delArm=null;save();drawM();msg('削除しました')}else{delArm=i;drawM()}};
+$('vl').oninput=e=>{const i=e.target.dataset.vi;if(i!=null){S.visitors[i].wants=e.target.value;S.visitors[i].ai=0;save()}};
+$('vl').onclick=e=>{const i=e.target.dataset.vd;if(i!=null){S.visitors.splice(i,1);save();drawV()}};
+$('ad').onclick=()=>{const n=$('an').value.trim();if(!n)return;S.members.splice($('ap').value===''?S.members.length:+$('ap').value+1,0,{id:uid(),name:n,cat:$('ac').value.trim(),field:$('af').value.trim(),g:$('ag').value.trim(),roles:'',h:$('ah').checked,x:$('ax').checked,st:'p'});$('an').value=$('ac').value=$('af').value=$('ag').value='';$('ah').checked=$('ax').checked=false;$('ap').value='';save();drawM()};
+$('va').onclick=()=>{const n=$('vn').value.trim();if(!n){msg('ビジターの名前を入力してください');return}
+ S.visitors.push({name:n,kana:$('vk').value.trim(),comp:$('vc').value.trim(),field:$('vf').value.trim(),sp:$('vs').value.trim(),kind:(document.querySelector('input[name=vk]:checked')||{}).value||'ビジター',wants:$('vw').value.trim(),picks:[...document.querySelectorAll('input[name=pk]:checked')].map(x=>x.value),first:''});
+ ['vn','vk','vc','vf','vs','vw'].forEach(i=>$(i).value='');drawPick();save();drawV();msg(n+'様を追加しました')};
+let HM=new Map();
+function histMap(){const m=new Map();if(!$('av').checked)return m;(S.log||[]).slice(-8).forEach(l=>l.pairs.forEach(k=>m.set(k,(m.get(k)||0)+1)));return m}
+const hv=(a,b)=>HM.get(a.id<b.id?a.id+'|'+b.id:b.id+'|'+a.id)||0;
+function improve(rooms){const n=rooms.length;if(n<2)return;
+ const ok=(m,r)=>!m.h&&!(r.v&&picked(m,r.v));
+ const cost=r=>{let c=0;for(let i=0;i<r.p.length;i++)for(let j=i+1;j<r.p.length;j++)c+=hv(r.p[i],r.p[j])*10;if(r.v)c-=r.p.reduce((a,m)=>a+3*sc(m,r.v),0);return c};
+ for(let t=0;t<4000;t++){const a=rooms[Math.random()*n|0],b=rooms[Math.random()*n|0];if(a===b||!a.p.length||!b.p.length)continue;
+  const i=Math.random()*a.p.length|0,j=Math.random()*b.p.length|0,x=a.p[i],y=b.p[j];
+  if(!!x.x!==!!y.x||!ok(x,a)||!ok(y,b)||(a.v&&isSp(y,a.v))||(b.v&&isSp(x,b.v)))continue;
+  const before=cost(a)+cost(b);a.p[i]=y;b.p[j]=x;
+  if(cost(a)+cost(b)>before){a.p[i]=x;b.p[j]=y}}}
+function assign(M,V,caps){
+ const rooms=caps.map((c,i)=>({id:String.fromCharCode(65+i),v:V[i]||null,p:[],cap:c}));
+ const free=M.slice(),take=m=>free.splice(free.indexOf(m),1)[0],vr=rooms.slice(0,V.length);
+ HM=histMap();free.sort(()=>Math.random()-.5);
+ const s2=(m,v)=>sc(m,v)-(V.some(o=>o!==v&&picked(m,o))?4:0),best=(c,v)=>c.reduce((x,m)=>!x||s2(m,v)>s2(x,v)?m:x,null);
+ // 1 各ビジター室にビジホスを1人(スポンサーは除外)
+ [...vr].sort((a,b)=>free.filter(m=>m.h&&!isSp(m,a.v)).length-free.filter(m=>m.h&&!isSp(m,b.v)).length).forEach(r=>{
+  const m=best(free.filter(m=>m.h&&!isSp(m,r.v)),r.v);if(m)r.p.push(take(m))});
+ // 1b つながりたい人を同室に(席に余裕がある範囲で)
+ vr.forEach(r=>{free.filter(m=>picked(m,r.v)&&!isSp(m,r.v)).forEach(m=>{if(free.includes(m)&&1+r.p.length<r.cap)r.p.push(take(m))})});
+ // 2 ビジホスは2人まで(できるとき)
+ free.filter(m=>m.h).forEach(m=>{const c=vr.filter(r=>1+r.p.length<r.cap&&r.p.filter(x=>x.h).length<2&&!isSp(m,r.v));
+  if(c.length){c.sort((a,b)=>a.p.filter(x=>x.h).length-b.p.filter(x=>x.h).length||sc(m,b.v)-sc(m,a.v));take(m);c[0].p.push(m)}});
+ // 3 ビジター室の残り席を相性で埋める
+ vr.forEach(r=>{while(1+r.p.length<r.cap){const m=best(free.filter(m=>!isSp(m,r.v)),r.v);if(!m)break;r.p.push(take(m))}});
+ // 4 残りはメンバー室へ(三役は分散)
+ free.sort((a,b)=>b.x-a.x);
+ free.slice().forEach(m=>{take(m);const mr=rooms.slice(V.length);let c=mr.filter(r=>r.p.length<r.cap);
+  if(!c.length)c=mr.length?[mr[mr.length-1]]:[rooms[rooms.length-1]];
+  const k=r=>(m.x?r.p.filter(y=>y.x).length*10:0)-(r.cap-r.p.length);c.sort((a,b)=>k(a)-k(b))[0].p.push(m)});
+
+ improve(rooms);return rooms}
+function check(){const w=[];R.forEach(r=>{r.bad=false;if(!r.v)return;
+  const sp=r.p.find(m=>isSp(m,r.v));if(sp){w.push(`${r.id}室: ${r.v.name}様のスポンサー(${sp.name})が同室です`);r.bad=true}
+  if(!r.p.some(m=>m.h)){w.push(`${r.id}室: ビジホスがいません`);r.bad=true}});
+ const inV=new Set(R.filter(r=>r.v).flatMap(r=>r.p.map(m=>m.id)));
+ R.flatMap(r=>r.p).filter(m=>m.h&&!inV.has(m.id)).forEach(m=>w.push(`ビジホスの${m.name}さんは席の都合でビジターと同室にできていません`));return w}
+function chip(m,r,k){const rg=R[r]&&R[r].g,bd=(m.h?'<i>ビジホス</i>':'')+(m.x?'<i class="t">三役</i>':'')+(rg&&m.g&&gl(m.g)!==gl(rg)?'<i class="o">元'+gl(m.g)+'</i>':'');
+ return`<button class="c${m.h?' h':''}${m.x?' x':''}${sel&&sel[0]==r&&sel[1]==k?' sel':''}" draggable="true" data-r="${r}" data-k="${k}"><span class="nm">${m.name}</span><span class="ct">${m.cat||m.field||''}</span><span class="bd">${bd}</span></button>`}
+function draw(){const w=check();
+ $('rooms').innerHTML=R.map((r,i)=>{const used=r.p.length+(r.v?1:0),free=Math.max(0,r.cap-used);
+  return`<div class="r${r.v?' vr':''}" data-room="${i}"><h3><span class="rid">${r.id}</span>${r.g?gl(r.g)+(r.v?'('+(r.v.kind||'ビジター')+')':''):(r.v?(r.v.kind||'ビジター')+'室':'メンバー室')}<span class="cn">${used}/${r.cap}人</span></h3>`+
+  (r.v?`<button class="c v${sel&&sel[0]==i&&sel[1]=='v'?' sel':''}" draggable="true" data-r="${i}" data-k="v"><span class="nm">${r.v.name} 様</span><span class="ct">${r.v.kind||'ビジター'} ${r.v.field||''}</span></button>`:'')+
+  r.p.map((m,k)=>chip(m,i,k)).join('')+Array(free).fill(`<button class="c e" data-r="${i}" data-e="1">空席</button>`).join('')+'</div>'}).join('');
+ $('warn').style.display='none';
+ msg(`${R.length}室 / ${R.reduce((a,r)=>a+r.p.length+(r.v?1:0),0)}人を配置`+(window.EX?` / 空席${window.EX}席`:''));
+ $('ptitle').textContent='部屋割り   メンバー'+R.reduce((a,r)=>a+r.p.length,0)+'人 / ビジター・ゲスト'+R.filter(r=>r.v).length+'人';$('rooms').style.setProperty('--pc',R.length<=15?5:R.length<=18?6:7);
+ $('zn').value=R.filter(r=>r.v).map(r=>`${r.id}${r.v.kind||'ビジター'}/${r.v.name}/${r.v.field||''}`).join('\n');
+ $('o').value=mkRows().map(a=>a.join('\t')).join('\n')}
+$('go').onclick=()=>{const M=S.members.flatMap(m=>m.st=='p'?[m]:m.st=='s'&&(m.pn||'').trim()?[{...m,id:m.id+'s',name:m.pn.trim()+'(代理)',h:false,x:false}]:[]);if(!M.length){msg('出席メンバーがいません');return}if(mode()==='g'){if(!M.some(m=>(m.g||'').trim())){msg('メンバーの「班」が入っていません。メンバーの一覧で班を入れてください');return}
+  const o=assignGroups(M,S.visitors);window.EX=0;sel=null;R=o.rooms;R.tok=Date.now();draw();
+  if(o.moved&&!o.left.length)msg('ビジホスの配置と人数をそろえるため、'+o.moved+'人を別の班の部屋に移しました(名前の横の「元〇班」が目印です)');if(o.left.length)msg('班の数よりビジター・ゲストが多いため、'+o.left.map(v=>v.name).join('、')+'様は入っていません。手で入れてください');return}
+ const c=caps(),seat=c.reduce((a,b)=>a+b,0),need=M.length+S.visitors.length;
+ if(c.length<S.visitors.length){msg('ビジターの人数より部屋数が少ないです');return}
+ if(seat<need){msg(`席が${need-seat}席足りません。部屋数を増やしてください`);return}
+ window.EX=seat-need;sel=null;R=assign(M,S.visitors,c);R.tok=Date.now();draw()};
+function assignGroups(M,V){
+ const names=[...new Set(M.map(m=>(m.g||'').trim()))].sort((a,b)=>(a===''?1:0)-(b===''?1:0)||a.localeCompare(b,'ja',{numeric:true}));
+ const rooms=names.map((g,i)=>({id:String.fromCharCode(65+i),v:null,p:M.filter(m=>(m.g||'').trim()===g),cap:0,g:g||'未設定'})),used=new Set(),left=[];
+ V.forEach(v=>{let best=-1,bs=-1e9;rooms.forEach((r,i)=>{if(used.has(i)||r.p.some(m=>isSp(m,v)))return;let t=0;r.p.forEach(m=>{if(picked(m,v))t+=5;if(m.h)t+=3;t+=sc(m,v)});if(t>bs){bs=t;best=i}});
+  if(best<0)best=rooms.findIndex((r,i)=>!used.has(i));
+  if(best>=0){used.add(best);rooms[best].v=v}else left.push(v)});
+ 
+ const tot=r=>r.p.length+(r.v?1:0);let moved=0;
+ const okHosts=r=>r.v?r.p.filter(x=>x.h&&!isSp(x,r.v)):[];
+ const canLeave=(r,m)=>!(r.v&&m.h&&!isSp(m,r.v)&&okHosts(r).length<=1);
+ const canEnter=(r,m)=>!(r.v&&isSp(m,r.v));
+ const mv=(a,b,m)=>{a.p.splice(a.p.indexOf(m),1);b.p.push(m);moved++};
+ // 1 ビジター室にビジホスを必ず1人(足りなければ他の班から移す)
+ rooms.filter(r=>r.v&&!okHosts(r).length).forEach(r=>{
+  const c=[];rooms.forEach(o=>{if(o!==r)o.p.forEach(m=>{if(m.h&&!isSp(m,r.v)&&canLeave(o,m))c.push([o,m])})});
+  c.sort((x,y)=>tot(y[0])-tot(x[0]));if(c.length)mv(c[0][0],r,c[0][1])});
+ // 2 人数をそろえる(最大と最小の差が1人以内になるまで。班を分けて構いません)
+ for(let n=0;n<400;n++){const by=[...rooms].sort((a,b)=>tot(b)-tot(a));let done=false;
+  for(const big of by){for(const sm of [...by].reverse()){if(big===sm||tot(big)-tot(sm)<2)continue;
+   const m=big.p.find(x=>canLeave(big,x)&&canEnter(sm,x)&&!(big.v&&picked(x,big.v)));
+   if(m){mv(big,sm,m);done=true;break}}if(done)break}
+  if(!done)break}
+ rooms.forEach(r=>r.cap=tot(r));return{rooms,left,moved}}
+const keyOf=b=>b.dataset.e?'e':b.dataset.k==='v'?'v':+b.dataset.k;
+function act(a){let err='';
+ if(!sel){if(a[1]==='e')return;sel=a;draw();return}
+ const[sr,sk]=sel;sel=null;
+ if(sr===a[0]&&sk===a[1]){draw();return}
+ if(sk==='v'||a[1]==='v'){if(sk===a[1]){const t=R[sr].v;R[sr].v=R[a[0]].v;R[a[0]].v=t}else err='ビジターはビジター同士でだけ入れ替えできます'}
+ else if(a[1]==='e'){R[a[0]].p.push(R[sr].p.splice(sk,1)[0])}
+ else{const t=R[sr].p[sk];R[sr].p[sk]=R[a[0]].p[a[1]];R[a[0]].p[a[1]]=t}
+ draw();if(err)msg(err)}
+let drag=null;
+$('rooms').onclick=e=>{const b=e.target.closest('.c[data-r]');if(b)act([+b.dataset.r,keyOf(b)])};
+$('rooms').ondragstart=e=>{const b=e.target.closest('.c[data-r]');if(!b||b.dataset.e){e.preventDefault();return}drag=[+b.dataset.r,keyOf(b)];e.dataTransfer.setData('text','x')};
+$('rooms').ondragover=e=>e.preventDefault();
+$('rooms').ondrop=e=>{e.preventDefault();if(!drag)return;const b=e.target.closest('.c[data-r]'),c=e.target.closest('.r');sel=drag;drag=null;
+ if(b)act([+b.dataset.r,keyOf(b)]);else if(c)act([+c.dataset.room,'e']);else{sel=null;draw()}};
+$('cp').onclick=()=>{$('o').select();try{document.execCommand('copy');msg('コピーしました。スプレッドシートに貼り付けできます')}catch(e){}};
+$('ra').onclick=()=>{S.members.forEach(m=>{m.st='p';m.pn=''});save();drawM();msg('全員を出席に戻しました')};
+function mkRows(){const rows=[['番号','属性','部屋№','氏名','カテゴリー','会社名','紹介者','ZOOM表示名','出欠']];let n=0;
+ R.forEach(r=>{r.p.forEach(m=>rows.push([++n,'M',r.id,m.name,m.cat||m.field||'','','','M'+r.id+m.name,'']));
+  if(r.v)rows.push([++n,r.v.kind==='ゲスト'?'G':'V',r.id,r.v.name,r.v.field||'',r.v.comp||'',r.v.sp||'',(r.v.kind==='ゲスト'?'G':'V')+r.id+r.v.name,'出席'])});return rows}
+$('rec').onclick=()=>{if(!R.length){msg('先に「割り振る」を押してください');return}
+ const ids=new Set(S.members.map(m=>m.id)),pairs=[];
+ R.forEach(r=>{const a=r.p.map(m=>m.id).filter(i=>ids.has(i));for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++)pairs.push(a[i]<a[j]?a[i]+'|'+a[j]:a[j]+'|'+a[i])});
+ const e={d:new Date().toISOString().slice(0,10),t:R.tok,pairs};S.log=S.log||[];
+ if(S.log.length&&S.log[S.log.length-1].t===R.tok)S.log[S.log.length-1]=e;else S.log.push(e);
+ S.log=S.log.slice(-12);save();hsu();msg('記録しました。次回から、この組み合わせを避けて割り振ります')};
+$('undo').onclick=()=>{if(!(S.log||[]).length){msg('取り消せる記録がありません');return}S.log.pop();save();hsu();msg('直前の記録を取り消しました')};
+$('prt').onclick=()=>{if(!R.length){msg('先に「割り振る」を押してください');return}try{window.print()}catch(e){msg('印刷を開けませんでした。画面のスクリーンショットでも共有できます')}};
+$('im').onclick=()=>{
+ const rows=$('pm').value.split(/\r?\n/).map(l=>l.split('\t').map(x=>x.trim())).filter(a=>a.some(x=>x));
+ if(!rows.length){msg('名簿を貼り付けてください');return}
+ const hdr=rows[0],isH=hdr.some(c=>/氏名|名前/.test(c)),idx=re=>hdr.findIndex(c=>re.test(c));
+ let c={name:0,cat:1,field:2,flagH:3,flagX:4,g:5,roles:[]};
+ if(isH)c={name:idx(/氏名|名前/),cat:idx(/カテゴリー|カテゴリ/),field:idx(/分野|業種/),flagH:idx(/ビジホス|ビジターホスト/),flagX:idx(/三役/),g:idx(/^班(番号|番|名)?$/),roles:hdr.map((h,i)=>/役職/.test(h)?i:-1).filter(i=>i>=0)};
+ const yes=v=>!!v&&!/^(×|✕|0|FALSE|いいえ|なし|-)$/i.test(v),body=isH?rows.slice(1):rows,old=new Map(S.members.map(m=>[nm(m.name),m]));
+ const L=body.filter(a=>a[c.name]&&!/^(氏名|名前)$/.test(a[c.name])).map(a=>{
+  const g=i=>i>=0?a[i]||'':'',name=a[c.name].replace(/[\s　]+/g,' ').trim(),ro=c.roles.map(i=>a[i]).filter(Boolean).join('・'),tk=ro.split(/[・,、\s]+/),o=old.get(nm(name));
+  const h=(c.flagH>=0&&yes(g(c.flagH)))||tk.some(t=>/^(ビジホス|ビジターホスト)$/.test(t));
+  const x=(c.flagX>=0&&yes(g(c.flagX)))||/プレジデント|セクレタリー|トレジャラー|書記|会計|三役/.test(ro);
+  return{id:o?o.id:uid(),name,cat:g(c.cat),field:g(c.field),g:c.g>=0?g(c.g):(o?o.g||'':''),roles:ro,h,x,st:o?o.st:'p',pn:o?o.pn||'':''}});
+ if(!L.length){msg('名簿を読み取れませんでした。見出し行の「氏名」の列を含めて貼り付けてください');return}
+ S.members=L;$('pm').value='';save();drawM();
+ msg(L.length+'人を登録しました(ビジホス'+L.filter(m=>m.h).length+'人、三役'+L.filter(m=>m.x).length+'人)。今の名簿と置き換えました')};
+
+function makePdf(jpg,pw,ph){const enc=new TextEncoder(),parts=[],offs=[];let len=0;const push=b=>{const u=typeof b==='string'?enc.encode(b):b;parts.push(u);len+=u.length};
+ const W=842,H=595,cs='q '+W+' 0 0 '+H+' 0 0 cm /Im0 Do Q';
+ push('%PDF-1.4\n');offs[1]=len;push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+ offs[2]=len;push('2 0 obj\n<< /Type /Pages /Count 1 /Kids [3 0 R] >>\nendobj\n');
+ offs[3]=len;push('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+W+' '+H+'] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>\nendobj\n');
+ offs[4]=len;push('4 0 obj\n<< /Length '+cs.length+' >>\nstream\n'+cs+'\nendstream\nendobj\n');
+ offs[5]=len;push('5 0 obj\n<< /Type /XObject /Subtype /Image /Width '+pw+' /Height '+ph+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpg.length+' >>\nstream\n');push(jpg);push('\nendstream\nendobj\n');
+ const xs=len;let x='xref\n0 6\n0000000000 65535 f \n';for(let i=1;i<6;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+ push(x+'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xs+'\n%%EOF');return parts}
+function drawSheet(){
+ const PW=2480,PH=1754,sc=PW/1754,pc=R.length<=15?5:R.length<=18?6:7,rn=Math.ceil(R.length/pc),mx=50*sc,top=130*sc,gap=14*sc,
+  cw=(PW-2*mx-(pc-1)*gap)/pc,ch=(PH-top-50*sc-(rn-1)*gap)/rn,FONT='"Hiragino Sans","Noto Sans JP","Yu Gothic","Meiryo",sans-serif';
+ const c=document.createElement('canvas');c.width=PW;c.height=PH;const x=c.getContext('2d');
+ const fit=(t,w)=>{t=String(t||'');while(x.measureText(t).width>w&&t.length>1)t=t.slice(0,-1);return t};
+ const pill=(t,px,py,bg,fg,f)=>{x.font='bold '+f+'px '+FONT;const w=x.measureText(t).width+f;x.fillStyle=bg;x.fillRect(px,py-f*.8,w,f*1.6);x.fillStyle=fg;x.fillText(t,px+f/2,py);return w+f*.4};
+ x.textBaseline='middle';x.fillStyle='#fff';x.fillRect(0,0,PW,PH);x.fillStyle='#cf2030';x.fillRect(0,0,PW,95*sc);
+ x.fillStyle='#fff';x.font='bold '+(42*sc)+'px '+FONT;x.fillText('部屋割り',40*sc,48*sc);
+ x.font=(24*sc)+'px '+FONT;x.textAlign='right';x.fillText('メンバー'+R.reduce((a,r)=>a+r.p.length,0)+'人 / ビジター・ゲスト'+R.filter(r=>r.v).length+'人',PW-40*sc,48*sc);x.textAlign='left';
+ const maxP=Math.max(...R.map(r=>r.p.length+(r.v?1:0))),rh=Math.min(80*sc,(ch-70*sc)/Math.max(maxP,1)),nf=Math.min(20*sc,rh*.32),sf=nf*.5;
+ R.forEach((r,k)=>{const cx=mx+(k%pc)*(cw+gap),cy=top+Math.floor(k/pc)*(ch+gap);
+  x.fillStyle=r.v?'#fbdde0':'#f1efe8';x.fillRect(cx,cy,cw,ch);x.fillStyle='#cf2030';x.fillRect(cx,cy,cw,5*sc);
+  x.beginPath();x.arc(cx+28*sc,cy+38*sc,20*sc,0,7);x.fill();x.fillStyle='#fff';x.font='bold '+(24*sc)+'px '+FONT;x.textAlign='center';x.fillText(r.id,cx+28*sc,cy+39*sc);x.textAlign='left';
+  x.fillStyle='#1f2430';x.font='bold '+(20*sc)+'px '+FONT;x.fillText(r.g?gl(r.g)+(r.v?'('+(r.v.kind||'ビジター')+')':''):(r.v?(r.v.kind||'ビジター')+'室':'メンバー室'),cx+58*sc,cy+38*sc);
+  let y=cy+70*sc;
+  const row=(name,sub,tags,vis)=>{if(vis){x.fillStyle='#fff';x.fillRect(cx+6*sc,y,cw-12*sc,rh-4*sc);x.strokeStyle='#cf2030';x.lineWidth=2*sc;x.strokeRect(cx+6*sc,y,cw-12*sc,rh-4*sc)}
+   x.fillStyle='#1f2430';x.font='bold '+nf+'px '+FONT;const nmt=fit(name,cw-30*sc-tags.length*60*sc);x.fillText(nmt,cx+14*sc,y+rh*.32);
+   let px=cx+14*sc+x.measureText(nmt).width+8*sc;tags.forEach(t=>{px+=pill(t[0],px,y+rh*.32,t[1],t[2],sf)});
+   x.fillStyle='#6b6b66';x.font=sf+'px '+FONT;x.fillText(fit(sub,cw-28*sc),cx+14*sc,y+rh*.74);y+=rh};
+  if(r.v)row(r.v.name+' 様',(r.v.kind||'ビジター')+' '+(r.v.field||''),[],true);
+  r.p.forEach(m=>row(m.name,m.cat||m.field||'',[...(m.h?[['ビジホス','#ffe08a','#1f2430']]:[]),...(m.x?[['三役','#cf2030','#ffffff']]:[])],false))});
+ return c}
+$('pdf').onclick=()=>{if(!R.length){msg('先に「割り振る」を押してください');return}
+ try{const c=drawSheet(),b=atob(c.toDataURL('image/jpeg',0.92).split(',')[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
+  const blob=new Blob(makePdf(u,c.width,c.height),{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='部屋割り.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  msg('PDFを保存しました(ダウンロードフォルダを確認してください)。保存されないときは「印刷する」を使ってください')}
+ catch(e){msg('PDFを作れませんでした: '+(e&&e.message||'エラー')+'。「印刷する」から、PDFとして保存してください')}};
+$('cz').onclick=()=>{$('zn').select();try{document.execCommand('copy');msg('ZOOM名前変更用をコピーしました')}catch(e){}};
+init();
+</script></main></body></html>
